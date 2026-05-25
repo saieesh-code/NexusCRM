@@ -537,7 +537,12 @@ async function loadData(){
     seedData();
   }
 }
+function saveData(){
 
+  localStorage.setItem('nexus_leads', JSON.stringify(leads));
+
+  localStorage.setItem('nexus_activities', JSON.stringify(activities));
+}
 function seedData(){
   const names=['Amara Okonkwo','James Whitfield','Sofia Reyes','Liam Chen','Priya Nair','Marcus Webb','Hana Suzuki','Tyler Brooks','Elena Voronova','Raj Patel'];
   const companies=['TechNova Inc','Greenfield Corp','Atlas Solutions','BlueWave LLC','Summit Dynamics','Orbit Systems','Vertex Labs','Cedar Analytics','Streamline Co','PrimeEdge'];
