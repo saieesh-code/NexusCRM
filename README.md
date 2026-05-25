@@ -99,3 +99,14 @@ NexusCRM/
 │   └── .env
 │
 └── README.md
+
+
+---
+
+# ⭐ Support
+
+If you found this project useful:
+- Star the repository
+- Fork the project
+- Share feedback
+- Contribute improvements
