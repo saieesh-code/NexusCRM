@@ -504,6 +504,7 @@ textarea{resize:vertical;min-height:80px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
+const API_URL = 'https://nexus-crm-backend-ol29.onrender.com';
 const STATUSES = ['New','Contacted','Qualified','Proposal Sent','Converted','Closed'];
 const SOURCES  = ['Website','Referral','LinkedIn','Email Campaign','Cold Call','Trade Show'];
 const REPS     = ['Alice Johnson','Bob Martinez','Carol Lee','David Kim',''];
@@ -515,21 +516,26 @@ const STATUS_COLORS = {
 let leads=[], activities=[], editId=null, currentPage=1, perPage=8, selectedIds=new Set();
 let statusChart=null, monthlyChart=null, sourceChart=null, funnelChart=null, trendChart=null;
 
-function loadData(){
+async function loadData(){
   try{
-    const ls=localStorage.getItem('nexus_leads');
-    const la=localStorage.getItem('nexus_activities');
-    if(ls) leads=JSON.parse(ls);
-    if(la) activities=JSON.parse(la);
-    if(!leads.length) seedData();
-  }catch(e){seedData();}
-}
+    const res = await fetch(`${API_URL}/leads`);
+    const data = await res.json();
 
-function saveData(){
-  try{
-    localStorage.setItem('nexus_leads',JSON.stringify(leads));
-    localStorage.setItem('nexus_activities',JSON.stringify(activities.slice(0,100)));
-  }catch(e){}
+    if(data.success){
+      leads = data.data || [];
+    }
+
+    const la = localStorage.getItem('nexus_activities');
+    if(la) activities = JSON.parse(la);
+
+    if(!leads.length){
+      seedData();
+    }
+
+  }catch(e){
+    console.error(e);
+    seedData();
+  }
 }
 
 function seedData(){
@@ -839,7 +845,7 @@ function editLead(id){
   document.getElementById('lead-modal').classList.remove('hidden');
 }
 
-function saveLead(){
+async function saveLead(){
   const name=document.getElementById('f-name').value.trim();
   const email=document.getElementById('f-email').value.trim();
   if(!name||!email){toast('Name and email are required','error');return;}
@@ -869,6 +875,12 @@ function saveLead(){
       message:document.getElementById('f-message').value.trim(),
       notes:[],createdAt:now,updatedAt:now
     };
+    await fetch(`${API_URL}/leads`, {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'},
+          body:JSON.stringify(lead) });
+
     leads.unshift(lead);
     logActivity(`New lead added: ${name} from ${lead.company}`,'new');
     toast('Lead created','success');
@@ -879,10 +891,14 @@ function saveLead(){
   if(currentView==='kanban') renderKanban();
 }
 
-function deleteLead(id){
+async function deleteLead(id){
   const lead=leads.find(l=>l.id===id);
   if(!lead) return;
   if(!confirm(`Delete lead: ${lead.name}?`)) return;
+  await fetch(`${API_URL}/leads/${id}`,{
+    method:'DELETE'
+  });
+
   leads=leads.filter(l=>l.id!==id);
   logActivity(`Lead deleted: ${lead.name}`,'delete');
   saveData();updateBadge();toast('Lead deleted','success');
