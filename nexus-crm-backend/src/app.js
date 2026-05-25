@@ -14,10 +14,10 @@ const errorHandler    = require('./middleware/errorHandler');
 const notFound        = require('./middleware/notFound');
 const logger          = require('./utils/logger');
 
-const authRoutes      = require('./routes/auth.routes');
-const leadRoutes      = require('./routes/lead.routes');
-const noteRoutes      = require('./routes/note.routes');
-const analyticsRoutes = require('./routes/analytics.routes');
+const authRoutes      = require('./routes/authRoutes');
+const leadRoutes      = require('./routes/leadRoutes');
+const noteRoutes      = require('./routes/noteRoutes');
+const analyticsRoutes = require('./routes/analyticsRoutes');
 
 const app = express();
 
