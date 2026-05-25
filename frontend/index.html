@@ -875,14 +875,27 @@ async function saveLead(){
       message:document.getElementById('f-message').value.trim(),
       notes:[],createdAt:now,updatedAt:now
     };
-    await fetch(`${API_URL}/leads`, {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json'},
-          body:JSON.stringify(lead) });
+    try{
+      const res = await fetch(`${API_URL}/leads`, {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify(lead)
+      });
+
+      if(!res.ok){
+        console.error('Backend save failed');
+      }
+
+    }catch(err){
+      console.error(err);
+    }
 
     leads.unshift(lead);
+
     logActivity(`New lead added: ${name} from ${lead.company}`,'new');
+
     toast('Lead created','success');
   }
   saveData();closeModal();updateBadge();
